@@ -113,7 +113,7 @@ java.runtime.version=11
 Now create the app at the console
 
 ```
-heroku apps:create devopsdemo-deployment
+heroku apps:create devopsdemo-deployment-staging
 ```
 
 * Heroku app > Deploy > GitHub: Connect to GitHub > search repo
@@ -121,7 +121,7 @@ heroku apps:create devopsdemo-deployment
 * Add Heroku badge
 
 ```markdown
-[![Deployed on Heroku](https://img.shields.io/badge/heroku-deployed-blueviolet.svg?logo=heroku&)](https://devopsdemo-deployment.herokuapp.com/hello)
+[![Deployed on Heroku](https://img.shields.io/badge/heroku-deployed-blueviolet.svg?logo=heroku&)](https://devopsdemo-deployment-staging.herokuapp.com/hello)
 ```
 
 * Change some code & push
@@ -131,4 +131,71 @@ heroku apps:create devopsdemo-deployment
 
 Access the App:
 
-https://devopsdemo-deployment.herokuapp.com/hello
+https://devopsdemo-deployment-staging.herokuapp.com/hello
+
+### Stages
+
+* Add a new Pipeline to the App (at Deploy)
+* Connect Pipeline to GitHub repository & enable Review Apps
+* Create new Issue „cool new feature“
+* Change some code, create new branch, push with #2
+
+* PullRequest for the new feature
+* Create new Review app in Heroku
+* Access App in Browser
+* Merge PullRequest
+
+* Watch staging environment get updated
+
+__How do we deploy to production?__
+
+* Create production environment
+
+```
+heroku apps:create devopsdemo-deployment
+```
+
+* Click on "Deploy a branch..." to __manually__ issue a production release
+
+
+### Docker
+
+Install Docker (Mac: `brew cask install docker`)
+
+Create __Dockerfile__
+
+```dockerfile
+FROM adoptopenjdk:11-jre-hotspot
+
+VOLUME /tmp
+
+# Add Spring Boot app.jar to Container
+COPY target/*.jar app.jar
+
+ENV JAVA_OPTS=""
+
+# Fire up our Spring Boot app by default
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+```
+
+Build the app with Maven
+
+```shell script
+mvn clean package
+```
+
+Build Docker image with:
+
+```shell script
+docker build . --tag devopsdemo:latest
+```
+
+Now run our Docker container (with port binding):
+
+```shell script
+docker run -p 8080:8080 devopsdemo:latest
+```
+
+Access our App at
+
+http://localhost:8080/hello
