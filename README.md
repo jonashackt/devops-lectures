@@ -66,7 +66,9 @@ public class HelloRouter {
 * Now commit code (use Issue id!) und push
 
 
-### Continuous...  
+### Continuous Integration  
+
+* Create new .github/workflows directory & maven.yml inside
 
 __github-actions-maven.yml__ 
 ```yaml
@@ -88,3 +90,45 @@ jobs:
     - name: Test with Maven
       run: mvn -B test --no-transfer-progress
 ```
+
+* Add badge to README.md
+
+```markdown
+[![Build Status](https://github.com/jonashackt/devopsdemo/workflows/devopsdemo/badge.svg)](https://github.com/jonashackt/devopsdemo/actions)
+```
+
+* Commit & push
+
+
+### Continuous Deployment
+
+We need JDK 11, so let's configure it (or we'll end up with `Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile (default-compile) on project devopsdemo: Fatal error compiling: invalid target release: 11 ` errors):
+
+__system.properties__
+
+```properties
+java.runtime.version=11
+```
+
+Now create the app at the console
+
+```
+heroku apps:create devopsdemo-deployment
+```
+
+* Heroku app > Deploy > GitHub: Connect to GitHub > search repo
+* Enable automatic deploys + wait for CI to pass before deploy
+* Add Heroku badge
+
+```markdown
+[![Deployed on Heroku](https://img.shields.io/badge/heroku-deployed-blueviolet.svg?logo=heroku&)](https://devopsdemo-deployment.herokuapp.com/hello)
+```
+
+* Change some code & push
+* Why didn't the automatic deploy work?
+* Pull Request!
+* Watch the Heroku Apps' Activity -> Deployment
+
+Access the App:
+
+https://devopsdemo-deployment.herokuapp.com/hello
